@@ -9,7 +9,7 @@ var mainBowerFiles = require('main-bower-files');
 
 var paths = {
   scripts: ['src/js/*'],
-  htmls: 'src/*.html',
+  htmls: ['src/*.html'],
   images: 'src/images/**/*',
   styles:'src/css/*',
 };
@@ -18,11 +18,19 @@ gulp.task('scripts', function() {
 	return gulp.src(mainBowerFiles({filter:new RegExp(/.js$/, 'i')}).concat(paths.scripts))
 		.pipe(plugins.filter('**/*.js'))
 		.pipe(plugins.concat('main.min.js'))
-		.pipe(plugins.uglify())
+		.pipe(plugins.angularFilesort())
+		//.pipe(plugins.uglify())
 		.pipe(gulp.dest('dist/js'));
 });
 gulp.task('css', function() {
-	return gulp.src(mainBowerFiles({filter:new RegExp(/.js$/, 'i')}).concat(paths.styles))
+	return gulp.src(mainBowerFiles({
+			filter:new RegExp(/.css$/, 'i'),
+			overrides: {
+			  "bulma": {
+			    "main": ["./css/bulma.css"]
+			  }
+			}
+		}).concat(paths.styles))
 		.pipe(plugins.filter('**/*.css'))
 		.pipe(plugins.order([
 			'normalize.css',
@@ -34,6 +42,9 @@ gulp.task('css', function() {
 		.pipe(browserSync.stream());
 });
 gulp.task('htmls', function(){
+	gulp.src('src/views/*.html')
+      .pipe(plugins.htmlmin({collapseWhitespace: true}))
+      .pipe(gulp.dest('dist/views'));
   return gulp.src(paths.htmls)
       .pipe(plugins.htmlmin({collapseWhitespace: true}))
       .pipe(gulp.dest('dist'));
@@ -53,5 +64,6 @@ gulp.task('watch', function() {
   gulp.watch(paths.styles, ['css']);
   gulp.watch(paths.images, ['images']);
   gulp.watch(paths.htmls, ['htmls']).on("change", browserSync.reload);
+  gulp.watch(['src/views/*.html'], ['htmls']).on("change", browserSync.reload);
 });
 gulp.task("default", ['htmls','css','scripts', 'images','serve','watch']);
