@@ -19,10 +19,11 @@
     "tests"
   ],
   "dependencies": {
-    "normalize-css": "^4.1.1",
     "bulma": "^0.3.0",
     "angular": "^1.6.1",
     "soundcloud": "^3.1.2",
-    "angular-route": "^1.6.1"
+    "angular-route": "^1.6.1",
+    "angular-animate": "^1.6.1",
+    "Stickyfill": "^1.1.4"
   }
 }

@@ -1,4 +1,5 @@
 var gulp = require("gulp");
+var historyApiFallback = require('connect-history-api-fallback');
 var dest = 'dist/';
 var browserSync = require('browser-sync').create();
 var plugins = require("gulp-load-plugins")({
@@ -15,6 +16,7 @@ var paths = {
 };
 
 gulp.task('scripts', function() {
+	console.log(mainBowerFiles());
 	return gulp.src(mainBowerFiles({filter:new RegExp(/.js$/, 'i')}).concat(paths.scripts))
 		.pipe(plugins.filter('**/*.js'))
 		.pipe(plugins.concat('main.min.js'))
@@ -23,21 +25,12 @@ gulp.task('scripts', function() {
 		.pipe(gulp.dest('dist/js'));
 });
 gulp.task('css', function() {
-	return gulp.src(mainBowerFiles({
-			filter:new RegExp(/.css$/, 'i'),
-			overrides: {
-			  "bulma": {
-			    "main": ["./css/bulma.css"]
-			  }
-			}
-		}).concat(paths.styles))
-		.pipe(plugins.filter('**/*.css'))
-		.pipe(plugins.order([
-			'normalize.css',
-			'*'
-		]))
+	console.log(plugins);
+	return gulp.src(paths.styles)
+		.pipe(plugins.filter('**/*.sass'))
+		.pipe(plugins.sass({outputStyle: 'compressed'}).on('error', plugins.sass.logError))
 		.pipe(plugins.concat('style.min.css'))
-		.pipe(plugins.uglifycss({"uglyComments": false}))
+		.pipe(plugins.uglifycss({"uglyComments": true}))
 		.pipe(gulp.dest('dist/css'))
 		.pipe(browserSync.stream());
 });
@@ -55,7 +48,10 @@ gulp.task('images', function(){
 });
 gulp.task('serve', function() {
     browserSync.init({
-        server: "./dist"
+        server: {
+        	baseDir:"./dist",
+        	middleware: [historyApiFallback()]
+        }
     });
 });
 
