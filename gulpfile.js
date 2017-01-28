@@ -17,7 +17,7 @@ var paths = {
 
 gulp.task('scripts', function() {
 	console.log(mainBowerFiles());
-	return gulp.src(mainBowerFiles({filter:new RegExp(/.js$/, 'i')}).concat(paths.scripts))
+	return gulp.src(mainBowerFiles({filter:/.js$/}).concat(paths.scripts))
 		.pipe(plugins.filter('**/*.js'))
 		.pipe(plugins.concat('main.min.js'))
 		.pipe(plugins.angularFilesort())
